@@ -1,0 +1,11 @@
+{
+  "name": "hexo-auto-updated",
+  "version": "0.0.1",
+  "description": "A hexo plugin for auto update post updated time",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "yangxiaolang",
+  "license": "MIT"
+}
