@@ -50,16 +50,14 @@ module.exports.throttor= function throttor(func,delay){
 module.exports.loadUpdated = function () {
   const updatedMap = new Map()
   const filenames = fs.readdirSync(path.resolve('source/_posts'))
-  // console.log(filenames)
   filenames.forEach(filename => {
       const content = fs.readFileSync(path.resolve('source/_posts', filename)).toString()
       const matchArray = /updated: ([1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])\s+(20|21|22|23|[0-1]\d):[0-5]\d:[0-5]\d)/g.exec(content)
       if (matchArray !== null) {
           const updatedTime = matchArray[1]
-          // console.log(filename, updatedTime)
-          updatedMap.set(filename, updatedTime)
+          updatedMap.set(filename, {caches:[updatedTime],updated:false})
       } else {
-          updatedMap.set(filename, null)
+          updatedMap.set(filename, {caches:[],updated:false})
       }
   })
   return updatedMap

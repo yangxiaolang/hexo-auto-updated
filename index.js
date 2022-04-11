@@ -10,8 +10,8 @@ const {
 const debounceRewrite = debounce(throttor(rewriteUpdated, 1000), 100)
 const PostsDir = path.resolve('source/_posts')
 const UpdatedMap = loadUpdated()
-
 function rewriteUpdated(event, filename) {
+    console.log(event,filename)
     if (event === 'change') {
         const filepath = path.resolve(PostsDir, filename)
         const contentArray = fs.readFileSync(filepath).toString().split('\n')
@@ -29,19 +29,25 @@ function rewriteUpdated(event, filename) {
 }
 
 function rewrite(filename, content, index, nowUpdated) {
-    const cachedUpdated = UpdatedMap.get(filename)
-    if (cachedUpdated) {
-        if (new Date(cachedUpdated) > new Date(nowUpdated)) {
+    const cached = UpdatedMap.get(filename)
+    if (cached) {
+        if (cached.caches.includes(nowUpdated)&&cached.updated) {
+            cached.updated=false
             return
-        } else {
+        } else  {
+            if(new Date(nowUpdated)<new Date(cached.caches[0])){
+                return 
+            }
             const updatedTime = dateFtt('yyyy-MM-dd hh:mm:ss', new Date())
             content[index] = `updated: ${updatedTime}`
             fs.writeFileSync(path.resolve(PostsDir, filename), content.join('\n'))
-            UpdatedMap.set(filename, updatedTime)
-            console.log('done')
+            if(!cached.caches.includes(nowUpdated)){
+                cached.caches.push(nowUpdated)
+            }
+            cached.updated=true
+            console.log(`${filename} 's updated updates to ${updatedTime}`)
         }
     }
-
 }
 
 fs.watch(PostsDir, {}, debounceRewrite)
